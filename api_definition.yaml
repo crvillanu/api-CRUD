@@ -95,8 +95,73 @@ paths:
         '400':
           description: 'parametro incorrecto'
         '404':
-          description: 'no se encuentran items en el dataset'
-    
+          description: 'no se encuentran el items en el dataset'
+    put:
+      summary: actualizar un item del dataset, si existe
+      operationId: updateDatasetItem
+      description: |
+        Verifica si la entrada existe, y reemplaza por el objeto entregado.
+      parameters:
+        - in: path
+          name: county_fips
+          required: true
+          description: |
+            FIPS del Condado
+          schema:
+            type: integer
+            example: 1001
+        - in: path
+          name: date
+          required: true
+          description: |
+            Fecha de la entrada
+          schema:
+            type: string
+            format: date
+            example: '2020-05-08'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaVMT'
+      responses:
+        '200':
+          description: 'item actualizado'
+        '400':
+          description: 'parametro incorrecto'
+        '404':
+          description: 'no se encuentran el item en el dataset'
+    delete:
+      summary: eliminar un item del dataset, si existe
+      operationId: deleteDatasetItem
+      description: |
+        Verifica si la entrada existe, y elimina el item de la colección
+      parameters:
+        - in: path
+          name: county_fips
+          required: true
+          description: |
+            FIPS del Condado
+          schema:
+            type: integer
+            example: 1001
+        - in: path
+          name: date
+          required: true
+          description: |
+            Fecha de la entrada
+          schema:
+            type: string
+            format: date
+            example: '2020-05-08'
+      responses:
+        '200':
+          description: 'item eliminado'
+        '400':
+          description: 'parametro incorrecto'
+        '404':
+          description: 'no se encuentran el item en el dataset'
+  
 components:
   schemas:
     Resultados:
