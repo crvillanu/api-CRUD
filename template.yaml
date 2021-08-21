@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Example template for an HTTP API that creates, updates, and deletes items in DynamoDB
+  
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  MyAPI:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefinitionUri: swaggerFile_1.yaml
+    DependsOn: DDBHandlerFunction
+  DDBHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: pocApiFuncion
+      CodeUri: dynamo-handler/
+      Handler: app.handler
+      Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ItemsTable
+      Events:
+        GetAllItems:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MyAPI
+            Path: /customer
+            Method: GET
+        GetAnItem:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MyAPI
+            Path: /customer/{id}
+            Method: GET
+        CreateItem:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MyAPI
+            Path: /customer
+            Method: POST            
+
+  ItemsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      TableName: http-crud-tutorial-items
+
+Outputs:
+  ApiEndpoint:
+    Description: "URl Base de la API"
+    Value: !Sub 
+      - "https://${vApiId}.execute-api.${AWS::Region}.amazonaws.com"
+      - { vApiId: !Ref MyAPI }
+  Function:
+    Description: "DynamoDB handler function ARN"
+    Value: !GetAtt DDBHandlerFunction.Arn

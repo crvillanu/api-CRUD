@@ -1,0 +1,178 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/crvillanu/VehicleMilesTraveled/1.0.0
+info:
+  description: | 
+    API para registrar, consultar, actualizar y eliminar datos VMT,
+    correspondientes al dataset VehicleMilesTraveled
+  version: "1.0.0"
+  title: CRUD sobre el dataset VehiclesMilesTraveled
+paths:
+  /VehicleMilesTraveled:
+    post:
+      summary: agrega un item al dataset
+      operationId: addDataset
+      description: Agrega un item al dataset
+      responses:
+        '201':
+          description: item agregado
+        '400':
+          description: 'entrada inválida'
+        '409':
+          description: 'ya existe una entrada para ese condado y fecha'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaVMT'
+        description: Item a agregar
+    get:
+      summary: obtener el dataset
+      operationId: getDataset
+      description: |
+        Recupera la lista de entradas del dataset. 
+        La lista es paginada automaticamente, en caso de no 
+        retornar todos los resultados, se retorna un nextPageHint
+        que permitirá recuperar la siguiente página en una llamada
+        subsecuente.
+      parameters:
+        - in: query
+          name: nextPageHint
+          description: |
+            llave para obtener la siguiente página a partir del
+            último resultado de la página anterior
+          schema:
+            type: string
+            format: json
+      responses:
+        '200':
+          description: lista de entradas del dataset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resultados'
+        '400':
+          description: parametro incorrecto
+        '404':
+          description: dataset vacío
+  /VehicleMilesTraveled/{county_fips}/{date}:
+    get:
+      summary: obtener un item del dataset, si existe
+      operationId: getDatasetItem
+      description: |
+        Recupera la lista de entradas del dataset. 
+        La lista es paginada automaticamente, en caso de no 
+        retornar todos los resultados, se retorna un nextPageHint
+        que permitirá recuperar la siguiente página en una llamada
+        subsecuente.
+      parameters:
+        - in: path
+          name: county_fips
+          required: true
+          description: |
+            FIPS del Condado
+          schema:
+            type: integer
+            example: 1001
+        - in: path
+          name: date
+          required: true
+          description: |
+            Fecha de la entrada
+          schema:
+            type: string
+            format: date
+            example: '2020-05-08'
+      responses:
+        '200':
+          description: 'resultado de la busqueda en el dataset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resultados'
+        '400':
+          description: 'parametro incorrecto'
+        '404':
+          description: 'no se encuentran items en el dataset'
+    
+components:
+  schemas:
+    Resultados:
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntradaVMT'
+        Count:
+          type: integer
+          example: 7
+        ScannedCount:
+          type: integer
+          example: 7
+        LastEvaluatedKey:
+          type: object
+          format: json
+    EntradaVMT:
+      type: object
+      required:
+        - county_fips	
+        - county_name	
+        - state_name	
+        - date	
+        - county_vmt	
+        - baseline_jan_vmt	
+        - percent_change_from_jan	
+        - mean7_county_vmt	
+        - mean7_percent_change_from_jan	
+        - date_at_low	
+        - mean7_county_vmt_at_low	
+        - percent_change_from_low
+      properties:
+        county_fips:
+          type: integer
+          example: 1001
+        county_name:
+          type: string
+          minLength: 1
+          example: 'Autauga'
+        state_name:
+          type: string
+          minLength: 1
+          example: 'Alabama'
+        date:
+          type: string
+          format: date
+          example: '2020-05-08'
+        county_vmt:
+          type: integer
+          example: 3550000
+        baseline_jan_vmt:
+          type: integer
+          example: 3550000
+        percent_change_from_jan:
+          type: number
+          format: float
+          example: -16.84
+        mean7_county_vmt:
+          type: number
+          format: float
+          example: 2724285.71
+        mean7_percent_change_from_jan:
+          type: number
+          format: float
+          example: -23.72
+        date_at_low:
+          type: string
+          format: date
+          example: '2020-12-04'
+        mean7_county_vmt_at_low:
+          type: number
+          format: float
+          example: 1542857.14
+        percent_change_from_low:
+          type: number
+          format: float
+          example: 80.83
