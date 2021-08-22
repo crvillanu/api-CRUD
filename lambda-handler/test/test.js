@@ -23,6 +23,26 @@ let event_POST =
     })
 };
 
+let event_POST_incompleto =
+{
+  routeKey: "POST /VehicleMilesTraveled",
+  body: JSON.stringify(
+    {
+      "county_fips": 1001,
+      "state_name": "Alabama",
+      "date": "2020-05-08",
+      "county_vmt": 3550000,
+      "baseline_jan_vmt": 3550000,
+      "percent_change_from_jan": -16.84,
+      "mean7_county_vmt": 2724285.71,
+      "mean7_percent_change_from_jan": -23.72,
+      "date_at_low": "2020-12-04",
+      "mean7_county_vmt_at_low": 1542857.14,
+      "percent_change_from_low": 80.83
+    })
+};
+
+
 let event_GET_1 =
 {
   routeKey: "GET /VehicleMilesTraveled/{county_fips}/{date}",
@@ -80,6 +100,27 @@ describe('POST', function () {
       let r = await handler(event_POST, null);
       assert.equal(r.statusCode, 201);
       assert(r.body.startsWith("\"Created item"));
+    });
+  });
+});
+
+describe('POST (Repetido)', function () {
+  describe('Intenta Crear un nuevo item pero ya existe', function () {
+    it('debe retornar statusCode 409 y body que comienza con Already exists item...', async function () {
+      let r = await handler(event_POST, null);
+      //console.log("repetido:"+JSON.stringify(r));
+      assert.equal(r.statusCode, 409);
+      assert(r.body.startsWith("\"Already exists item"));
+    });
+  });
+});
+
+describe('POST (Incompleto)', function () {
+  describe('Intenta Crear un nuevo item pero faltan atributos', function () {
+    it('debe retornar statusCode 400', async function () {
+      let r = await handler(event_POST_incompleto, null);
+      //console.log("incompleto:"+JSON.stringify(r));
+      assert.equal(r.statusCode, 400);
     });
   });
 });
