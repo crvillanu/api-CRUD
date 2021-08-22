@@ -28,6 +28,12 @@ paths:
             schema:
               $ref: '#/components/schemas/EntradaVMT'
         description: Item a agregar
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:110000390690:function:VehiclesMilesTraveled-CRUD/invocations"
+        connectionType: "INTERNET"
     get:
       summary: obtener el dataset
       operationId: getDataset
@@ -57,6 +63,12 @@ paths:
           description: parametro incorrecto
         '404':
           description: dataset vacío
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:110000390690:function:VehiclesMilesTraveled-CRUD/invocations"
+        connectionType: "INTERNET"
   /VehicleMilesTraveled/{county_fips}/{date}:
     get:
       summary: obtener un item del dataset, si existe
@@ -96,6 +108,12 @@ paths:
           description: 'parametro incorrecto'
         '404':
           description: 'no se encuentran el items en el dataset'
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:110000390690:function:VehiclesMilesTraveled-CRUD/invocations"
+        connectionType: "INTERNET"
     put:
       summary: actualizar un item del dataset, si existe
       operationId: updateDatasetItem
@@ -131,6 +149,12 @@ paths:
           description: 'parametro incorrecto'
         '404':
           description: 'no se encuentran el item en el dataset'
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:110000390690:function:VehiclesMilesTraveled-CRUD/invocations"
+        connectionType: "INTERNET"
     delete:
       summary: eliminar un item del dataset, si existe
       operationId: deleteDatasetItem
@@ -161,6 +185,12 @@ paths:
           description: 'parametro incorrecto'
         '404':
           description: 'no se encuentran el item en el dataset'
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:110000390690:function:VehiclesMilesTraveled-CRUD/invocations"
+        connectionType: "INTERNET"
   
 components:
   schemas:

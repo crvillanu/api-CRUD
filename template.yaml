@@ -1,62 +1,87 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Example template for an HTTP API that creates, updates, and deletes items in DynamoDB
+  HTTP API para operaciones CRUD sobre coleccion DynamoDB tbVehiclesMilesTraveled
   
 Globals:
   Function:
     Timeout: 10
 
 Resources:
-  MyAPI:
+  VehiclesMilesTraveledApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      DefinitionUri: swaggerFile_1.yaml
-    DependsOn: DDBHandlerFunction
-  DDBHandlerFunction:
+      DefinitionUri: api_definition.yaml
+    DependsOn: VehiclesMilesTraveledCRUDfunction
+
+  VehiclesMilesTraveledCRUDfunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: pocApiFuncion
-      CodeUri: dynamo-handler/
+      FunctionName: VehiclesMilesTraveled-CRUD
+      Description: Procesar las operaciones CRUD sobre la tabla DynamoDB VehiclesMilesTraveledTable
+      CodeUri: lambda-handler/
       Handler: app.handler
       Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref ItemsTable
+            TableName: !Ref VehiclesMilesTraveledTable
       Events:
+        CreateItem:
+            Type: HttpApi
+            Properties:
+              ApiId: !Ref VehiclesMilesTraveledApi
+              Path: /VehicleMilesTraveled
+              Method: POST 
         GetAllItems:
           Type: HttpApi
           Properties:
-            ApiId: !Ref MyAPI
-            Path: /customer
+            ApiId: !Ref VehiclesMilesTraveledApi
+            Path: /VehicleMilesTraveled
             Method: GET
         GetAnItem:
           Type: HttpApi
           Properties:
-            ApiId: !Ref MyAPI
-            Path: /customer/{id}
+            ApiId: !Ref VehiclesMilesTraveledApi
+            Path: /VehicleMilesTraveled/{county_fips}/{date}
             Method: GET
-        CreateItem:
+        UpdateAnItem:
           Type: HttpApi
           Properties:
-            ApiId: !Ref MyAPI
-            Path: /customer
-            Method: POST            
+            ApiId: !Ref VehiclesMilesTraveledApi
+            Path: /VehicleMilesTraveled/{county_fips}/{date}
+            Method: PUT
+        DeleteAnItem:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref VehiclesMilesTraveledApi
+            Path: /VehicleMilesTraveled/{county_fips}/{date}
+            Method: DELETE
 
-  ItemsTable:
-    Type: AWS::Serverless::SimpleTable
+  VehiclesMilesTraveledTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      PrimaryKey:
-        Name: id
-        Type: String
-      TableName: http-crud-tutorial-items
+      TableName: tbVehiclesMilesTraveled
+      AttributeDefinitions:
+        - AttributeName: county_fips
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: county_fips
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      
 
 Outputs:
   ApiEndpoint:
     Description: "URl Base de la API"
     Value: !Sub 
       - "https://${vApiId}.execute-api.${AWS::Region}.amazonaws.com"
-      - { vApiId: !Ref MyAPI }
+      - { vApiId: !Ref VehiclesMilesTraveledApi }
   Function:
     Description: "DynamoDB handler function ARN"
-    Value: !GetAtt DDBHandlerFunction.Arn
+    Value: !GetAtt VehiclesMilesTraveledCRUDfunction.Arn
