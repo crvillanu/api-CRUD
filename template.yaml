@@ -63,7 +63,7 @@ Resources:
       TableName: tbVehiclesMilesTraveled
       AttributeDefinitions:
         - AttributeName: county_fips
-          AttributeType: S
+          AttributeType: N
         - AttributeName: date
           AttributeType: S
       KeySchema:

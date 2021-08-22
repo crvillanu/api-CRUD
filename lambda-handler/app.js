@@ -5,6 +5,8 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 exports.handler = async (event, context) => {
     let body;
     let statusCode = 200;
+    let requestJSON;
+
     const headers = {
         "Content-Type": "application/json"
     };
@@ -15,47 +17,68 @@ exports.handler = async (event, context) => {
         switch (event.routeKey) {
             case "POST /VehicleMilesTraveled":
                 console.log("caso POST");
-                let requestJSON = JSON.parse(event.body);
+                requestJSON = JSON.parse(event.body);
+                
                 await dynamo
                     .put({
                         TableName: "tbVehiclesMilesTraveled",
-                        Item: {
-                            county_fips: requestJSON.county_fips,
-                            date: requestJSON.date
-                        }
+                        Item: requestJSON
                     })
                     .promise();
-                body = `Created item ${requestJSON.id}`;
+                body = `Created item ${requestJSON.county_fips}/${requestJSON.date}`;
                 break;
 
-            case "GET /customer":
+            case "GET /VehicleMilesTraveled":
                 body = await dynamo
-                    .scan({ TableName: "http-crud-tutorial-items" })
+                    .scan({ TableName: "tbVehiclesMilesTraveled" })
                     .promise();
                 break;
 
-            case "DELETE /items/{id}":
-                await dynamo
-                    .delete({
-                        TableName: "http-crud-tutorial-items",
-                        Key: {
-                            id: event.pathParameters.id
-                        }
-                    })
-                    .promise();
-                body = `Deleted item ${event.pathParameters.id}`;
-                break;
 
-            case "GET /customer/{id}":
+            case "GET /VehicleMilesTraveled/{county_fips}/{date}":
+                console.log("GET item");
+                let llave_get = {
+                    county_fips: parseInt(event.pathParameters.county_fips),
+                    date: event.pathParameters.date
+                };
+
                 body = await dynamo
                     .get({
-                        TableName: "http-crud-tutorial-items",
-                        Key: {
-                            id: event.pathParameters.id
-                        }
+                        TableName: "tbVehiclesMilesTraveled",
+                        Key: llave_get
                     })
                     .promise();
                 break;
+
+            case "PUT /VehicleMilesTraveled/{county_fips}/{date}":
+                requestJSON = JSON.parse(event.body);
+                let llave_put = {
+                    county_fips: parseInt(event.pathParameters.county_fips),
+                    date: event.pathParameters.date
+                };
+                await dynamo
+                    .put({
+                        TableName: "tbVehiclesMilesTraveled",
+                        Item: requestJSON
+                    })
+                    .promise();
+                body = `Updated item ${requestJSON.county_fips}/${requestJSON.date}`;
+                break;
+
+            case "DELETE /VehicleMilesTraveled/{county_fips}/{date}":
+                let llave_delete = {
+                    county_fips: parseInt(event.pathParameters.county_fips),
+                    date: event.pathParameters.date
+                };
+                await dynamo
+                    .delete({
+                        TableName: "tbVehiclesMilesTraveled",
+                        Key: llave_delete
+                    })
+                    .promise();
+                body = `Deleted item ${event.pathParameters.county_fips}/${event.pathParameters.date}`;
+                break;
+
 
 
             default:
@@ -78,5 +101,6 @@ exports.handler = async (event, context) => {
         headers
     };
 };
+
 
 

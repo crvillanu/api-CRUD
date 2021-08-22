@@ -1,8 +1,7 @@
 openapi: 3.0.0
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/crvillanu/VehicleMilesTraveled/1.0.0
+  - description: AWS Api Gateway endpoint
+    url: https://9f27lm6dx5.execute-api.us-east-1.amazonaws.com
 info:
   description: | 
     API para registrar, consultar, actualizar y eliminar datos VMT,
