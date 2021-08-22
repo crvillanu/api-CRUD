@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 
+AWS.config.update({region: 'us-east-1'});
+
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event, context) => {
@@ -25,6 +27,7 @@ exports.handler = async (event, context) => {
                         Item: requestJSON
                     })
                     .promise();
+                statusCode = 201;
                 body = `Created item ${requestJSON.county_fips}/${requestJSON.date}`;
                 break;
 

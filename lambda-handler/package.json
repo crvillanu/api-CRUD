@@ -1,0 +1,17 @@
+{
+  "name": "lambda-handler",
+  "version": "1.0.0",
+  "description": "VehiclesMilesTraveledCRUDfunction",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Cristian Villanueva",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.973.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.0"
+  }
+}
